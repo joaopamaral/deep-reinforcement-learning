@@ -24,19 +24,23 @@ def interact(env, agent, num_episodes=20000, window=100):
     best_avg_reward = -math.inf
     # initialize monitor for most recent rewards
     samp_rewards = deque(maxlen=window)
+    
+    alpha=0.15
+    gamma=0.6
     # for each episode
     for i_episode in range(1, num_episodes+1):
         # begin the episode
         state = env.reset()
+        eps = 1.0 / i_episode
         # initialize the sampled reward
         samp_reward = 0
         while True:
             # agent selects an action
-            action = agent.select_action(state)
+            action = agent.select_action(state, eps)
             # agent performs the selected action
             next_state, reward, done, _ = env.step(action)
             # agent performs internal updates based on sampled experience
-            agent.step(state, action, reward, next_state, done)
+            agent.step(state, action, reward, next_state, done, eps, alpha, gamma)
             # update the sampled reward
             samp_reward += reward
             # update the state (s <- s') to next time step
